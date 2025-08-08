@@ -34,8 +34,34 @@
           <input v-model.number="form.horsepower" type="number" class="w-full border rounded px-3 py-2" required />
         </div>
         <div>
-          <label class="block font-medium">City MPG <span class="text-blue-500 cursor-help" title="Efisiensi BBM di kota">&#9432;</span></label>
-          <input v-model.number="form.citympg" type="number" class="w-full border rounded px-3 py-2" required />
+          <label class="block font-medium">Engine Type<span class="text-blue-500 cursor-help" title="Tipe mesin mobil">&#9432;</span></label>
+          <select v-model="form.enginetype" class="w-full border rounded px-3 py-2">
+            <option disabled value="">Pilih salah satu</option>
+            <option value="ohc">OHC</option>
+            <option value="ohcv">OHCV</option>
+            <option value="dohc">DOHC</option>
+            <option value="dohcv">DOHCV</option>
+            <option value="l">L</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-medium">Engine Type<span class="text-blue-500 cursor-help" title="Tipe mesin mobil">&#9432;</span></label>
+          <select v-model="form.enginetype" class="w-full border rounded px-3 py-2">
+            <option disabled value="">Pilih salah satu</option>
+            <option value="ohc">OHC</option>
+            <option value="ohcv">OHCV</option>
+            <option value="dohc">DOHC</option>
+            <option value="dohcv">DOHCV</option>
+            <option value="l">L</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-medium">Engine Location<span class="text-blue-500 cursor-help" title="Letak mesin utama mobil">&#9432;</span></label>
+          <select v-model="form.enginelocation" class="w-full border rounded px-3 py-2">
+            <option disabled value="">Pilih salah satu</option>
+            <option value="front">Depan</option>
+            <option value="rear">Belakang</option>
+          </select>
         </div>
       </div>
     </fieldset>
@@ -68,6 +94,62 @@
             <option value="hardtop">Hardtop</option>
           </select>
         </div>
+        <div>
+          <label class="block font-medium">Door Number<span class="text-blue-500 cursor-help" title="Jumlah pintu mobil">&#9432;</span></label>
+          <select v-model="form.drivewheel" class="w-full border rounded px-3 py-2">
+            <option disabled value="">Pilih salah satu</option>
+            <option value="two">Dua</option>
+            <option value="four">Empat</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-medium">Cylinder Number<span class="text-blue-500 cursor-help" title="Jumlah total silinder mesin mobil ">&#9432;</span></label>
+          <select v-model="form.cylindernumber" class="w-full border rounded px-3 py-2">
+            <option disabled value="">Pilih salah satu</option>
+            <option value="three">Three</option>
+            <option value="four">Four</option>
+            <option value="five">Five</option>
+            <option value="six">Six</option>
+            <option value="seven">Seven</option>
+            <option value="eight">Eight</option>
+            <option value="twelve">Twelve</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-medium">Fuel System<span class="text-blue-500 cursor-help" title="Letak mesin utama mobil">&#9432;</span></label>
+          <select v-model="form.fuelsystem" class="w-full border rounded px-3 py-2">
+            <option disabled value="">Pilih salah satu</option>
+            <option value="mpfi">MPFI</option>
+            <option value="mfi">MFI</option>
+            <option value="2bbi">2BBI</option>
+            <option value="idi">IDI</option>
+            <option value="1bbl">1BBL</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-medium">Bore Ratio <span class="text-blue-500 cursor-help" title="Perbandingan diameter silinder dengan panjang stroke.">&#9432;</span></label>
+          <input v-model.number="form.boreratio" type="number" class="w-full border rounded px-3 py-2" />
+        </div>
+        <div>
+          <label class="block font-medium">Stroke <span class="text-blue-500 cursor-help" title="Panjang langkah piston di dalam silinder.">&#9432;</span></label>
+          <input v-model.number="form.stroke" type="number" class="w-full border rounded px-3 py-2" />
+        </div>
+        <div>
+          <label class="block font-medium">Compression Ratio <span class="text-blue-500 cursor-help" title="Perbandingan volume silinder saat piston di bawah dan di atas.">&#9432;</span></label>
+          <input v-model.number="form.compressionratio" type="number" class="w-full border rounded px-3 py-2" />
+        </div>
+        <div>
+          <label class="block font-medium">Peak RPM <span class="text-blue-500 cursor-help" title="Putaran mesin maksimum saat menghasilkan tenaga puncak.">&#9432;</span></label>
+          <input v-model.number="form.peakrpm" type="number" class="w-full border rounded px-3 py-2" />
+        </div>
+        <div>
+          <label class="block font-medium">Highway MPG <span class="text-blue-500 cursor-help" title="Efisiensi bahan bakar di jalan tol, diukur dalam mil per galon (MPG).">&#9432;</span></label>
+          <input v-model.number="form.highwaympg" type="number" class="w-full border rounded px-3 py-2" />
+        </div>
+        <div>
+          <label class="block font-medium">City MPG <span class="text-blue-500 cursor-help" title="Efisiensi BBM di kota">&#9432;</span></label>
+          <input v-model.number="form.citympg" type="number" class="w-full border rounded px-3 py-2" required />
+        </div>
       </div>
     </fieldset>
 
@@ -97,6 +179,16 @@ export default {
         curbweight: null,
         drivewheel: '',
         carbody: '',
+        doornumber: '',
+        enginelocation: '',
+        enginetype: '',
+        cylindernumber: '',
+        fuelsystem: '',
+        boreratio: null,
+        stroke: null,
+        compressionratio: null,
+        peakrpm: null,
+        highwaympg: null,
       },
       predictedPrice: null,
     };
@@ -125,6 +217,16 @@ export default {
         curbweight: null,
         drivewheel: '',
         carbody: '',
+        doornumber: '',
+        enginelocation: '',
+        enginetype: '',
+        cylindernumber: '',
+        fuelsystem: '',
+        boreratio: null,
+        stroke: null,
+        compressionratio: null,
+        peakrpm: null,
+        highwaympg: null,
       };
       this.predictedPrice = null;
     },
