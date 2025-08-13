@@ -1,0 +1,27 @@
+services:
+  frontend-dev:
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    ports:
+      - "5173:8080"      # Vite default
+    environment:
+      - NODE_ENV=development
+    command: sh -c "npm ci && npm run serve"
+
+  frontend:
+    image: "${IMAGE_URL:-alpine:latest}"
+    pull_policy: always
+    ports:
+      - "8080:80"
+    healthcheck:
+      test: [ "CMD", "wget", "-qO-", "http://localhost/" ]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - frontend-dev
