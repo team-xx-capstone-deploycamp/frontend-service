@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - prod
-      - main
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
@@ -43,7 +42,7 @@ jobs:
             @semantic-release/changelog
             @semantic-release/git
           branches: |
-            ['prod', 'main']
+            ['prod']
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
