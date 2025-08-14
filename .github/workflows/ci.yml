@@ -5,6 +5,11 @@ on:
       - prod
     types: [opened, synchronize]
 
+permissions:
+  security-events: write
+  contents: read
+  actions: read
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
@@ -30,25 +35,8 @@ jobs:
 
       - name: ESLint with Security Rules
         run: |
-          npm install --no-save eslint-plugin-security eslint-plugin-node-security
+          npm install --no-save eslint-plugin-security @typescript-eslint/eslint-plugin eslint-plugin-sonarjs
           npm run lint
-
-      - name: Dependency Vulnerability Scan (OSV-Scanner)
-        uses: google/osv-scanner-action@v1
-        continue-on-error: true
-        with:
-          scan-args: |-
-            --format=json
-            --output=osv-results.json
-            ./
-
-      - name: Upload OSV Results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: osv-scan-results
-          path: osv-results.json
-          retention-days: 7
 
       - name: Dockerfile Security Scan (Hadolint)
         uses: hadolint/hadolint-action@v3.1.0
@@ -65,6 +53,7 @@ jobs:
           name: hadolint-results
           path: hadolint-results.json
           retention-days: 7
+
       - name: Secret Scanning with TruffleHog
         uses: trufflesecurity/trufflehog@v3.63.7
         continue-on-error: true
@@ -73,6 +62,15 @@ jobs:
           base: main
           head: HEAD
           extra_args: --debug --only-verified
+
+  scan-pr:
+    if: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
+    uses: "google/osv-scanner-action/.github/workflows/osv-scanner-reusable-pr.yml@v2.0.0"
+    with:
+      scan-args: |-
+        --include-git-root
+        --recursive
+        ./
 
   test:
     runs-on: ubuntu-latest
