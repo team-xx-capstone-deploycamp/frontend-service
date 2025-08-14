@@ -35,7 +35,6 @@ jobs:
 
       - name: ESLint with Security Rules
         run: |
-          npm install --no-save eslint-plugin-security@^3.0.0 eslint-plugin-sonarjs@^0.23.0
           npm run lint
 
       - name: Dockerfile Security Scan (Hadolint)
