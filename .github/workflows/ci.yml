@@ -1,0 +1,143 @@
+name: CI Pipeline
+on:
+  pull_request:
+    branches:
+      - prod
+    types: [opened, synchronize]
+
+permissions:
+  security-events: write
+  contents: read
+  actions: read
+  pull-requests: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  BASE_IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  code-quality:
+    runs-on: ubuntu-latest
+    name: Code Quality
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: ESLint with Security Rules
+        run: |
+          npm run lint
+
+      - name: Dockerfile Security Scan (Hadolint)
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile
+          format: json
+          output-file: hadolint-results.json
+        continue-on-error: true
+
+      - name: Upload Hadolint Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hadolint-results
+          path: hadolint-results.json
+          retention-days: 7
+
+      - name: Secret Scanning with TruffleHog
+        uses: trufflesecurity/trufflehog@v3.63.7
+        continue-on-error: true
+        with:
+          path: ./
+          base: main
+          head: HEAD
+          extra_args: --debug --only-verified
+
+  scan-pr:
+    if: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
+    uses: "google/osv-scanner-action/.github/workflows/osv-scanner-reusable-pr.yml@v2.0.0"
+    with:
+      scan-args: |-
+        --include-git-root
+        --recursive
+        ./
+
+  test:
+    runs-on: ubuntu-latest
+    name: Tests
+    needs: code-quality
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Run Tests
+        run: |
+          if [ -f "package.json" ] && grep -q "\"test\"" package.json; then
+            npm test -- --coverage --coverageReporters=lcov --coverageReporters=json-summary
+          else
+            echo "No test script found in package.json, skipping tests"
+            mkdir -p coverage
+            echo '{"total": {"lines": {"pct": 0}, "statements": {"pct": 0}, "functions": {"pct": 0}, "branches": {"pct": 0}}}' > coverage/coverage-summary.json
+          fi
+
+      - name: Upload Coverage Reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-reports
+          path: |
+            ./coverage/
+            ./coverage/lcov.info
+            ./coverage/coverage-summary.json
+          retention-days: 7
+
+      - name: Coverage Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          recreate: true
+          path: coverage/coverage-summary.json
+
+  sonarcloud-analysis:
+    runs-on: ubuntu-latest
+    name: SonarCloud Analysis
+    needs: [ test ]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Download coverage reports
+      - name: Download coverage reports
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: coverage-reports
+          path: ./coverage/
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
