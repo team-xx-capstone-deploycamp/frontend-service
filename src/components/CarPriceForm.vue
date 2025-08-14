@@ -215,13 +215,17 @@ export default {
   methods: {
     async submitForm() {
       try {
-        const response = await fetch('http://localhost:8080/predict', {
+        const response = await fetch('http://127.0.0.1:8000/v1/predict', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(this.form),
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': 'Basic YWRtaW46Y2hhbmdlbWU='
+
+          },
+          body: JSON.stringify({record: this.form}),
         });
         const data = await response.json();
-        this.predictedPrice = data.predicted_price;
+        this.predictedPrice = data.prediction[0];
       } catch (error) {
         console.error('Prediction failed:', error);
       }
