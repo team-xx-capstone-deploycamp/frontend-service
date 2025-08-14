@@ -12,10 +12,11 @@ services:
     command: sh -c "npm ci && npm run serve"
 
   frontend:
-    image: "${IMAGE_URL:-alpine:latest}"
+    image: "${IMAGE_URL}"
+    container_name: "frontend-service"
     pull_policy: always
-    ports:
-      - "8080:80"
+    expose:
+      - "80"
     healthcheck:
       test: [ "CMD", "wget", "-qO-", "http://localhost/" ]
       interval: 30s
@@ -23,5 +24,9 @@ services:
       retries: 3
     environment:
       - NODE_ENV=production
-    depends_on:
-      - frontend-dev
+    networks:
+      - shared_network
+
+networks:
+  shared_network:
+    external: true

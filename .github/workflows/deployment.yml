@@ -1,4 +1,4 @@
-name: "frontend Deployment"
+name: "Frontend Deployment"
 
 on:
   push:
@@ -14,8 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     name: Build
     permissions:
-      contents: read
+      contents: write
       packages: write
+      issues: write
+      pull-requests: write
     outputs:
       image-digest: ${{ steps.build.outputs.digest }}
       image-name: ${{ env.REGISTRY }}/${{ env.BASE_IMAGE_NAME }}
@@ -39,6 +41,8 @@ jobs:
           extra_plugins: |
             @semantic-release/changelog
             @semantic-release/git
+          branches: |
+            ['prod']
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -155,12 +159,12 @@ jobs:
         run: |
           ssh ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} "mkdir -p ~/frontend-service/deploy"
           scp -r .env ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:~/frontend-service/
-          scp -r docker-compose.yml ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:~/frontend-service/
+          scp -r docker-compose.yaml ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:~/frontend-service/
 
       - name: Update Image
         run: |
-          ssh ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} "cd ~/frontend-service && export $(cat .env | xargs) && envsubst < docker-compose.yml > docker-compose.yml.tmp && mv docker-compose.yml.tmp docker-compose.yml"
+          ssh ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} "cd ~/frontend-service && export $(cat .env | xargs) && envsubst < docker-compose.yaml > docker-compose.yaml.tmp && mv docker-compose.yaml.tmp docker-compose.yaml"
 
       - name: Deploy or Restart Service on VPS
         run: |
-          ssh ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} "cd ~/frontend-service && docker compose -f docker-compose.yml --env-file .env up -d frontend"
+          ssh ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} "cd ~/frontend-service && docker compose -f docker-compose.yaml --env-file .env up -d frontend"
