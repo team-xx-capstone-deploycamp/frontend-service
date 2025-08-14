@@ -215,14 +215,13 @@ export default {
   methods: {
     async submitForm() {
       try {
-        const response = await fetch('http://127.0.0.1:8000/v1/predict', {
+        const response = await fetch(process.env.VUE_APP_API_URL, {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json',
-            'Authorization': 'Basic YWRtaW46Y2hhbmdlbWU='
-
+            'Authorization': process.env.VUE_APP_API_KEY
           },
-          body: JSON.stringify({record: this.form}),
+          body: JSON.stringify({ record: this.form }),
         });
         const data = await response.json();
         this.predictedPrice = data.prediction[0];
