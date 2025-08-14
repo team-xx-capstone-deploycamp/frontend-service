@@ -9,6 +9,7 @@ permissions:
   security-events: write
   contents: read
   actions: read
+  pull-requests: write
 
 env:
   REGISTRY: ghcr.io
