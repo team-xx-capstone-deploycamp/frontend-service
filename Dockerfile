@@ -6,7 +6,7 @@ ENV NODE_ENV=${NODE_ENV}
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --include=dev
 
 COPY . .
 
