@@ -53,11 +53,20 @@ jobs:
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
           echo "Deployment tag: ${TAG}"
 
+      - name: Set up environment variables for build
+        run: |
+          echo "Setting up environment variables for build"
+          echo "VUE_APP_API_URL=${{ secrets.VUE_APP_API_URL || 'http://localhost:3000' }}" >> $GITHUB_ENV
+          echo "VUE_APP_API_KEY=${{ secrets.VUE_APP_API_KEY || 'mykey' }}" >> $GITHUB_ENV
+
       - name: Build and Push Docker Image
         id: build
         uses: docker/build-push-action@v5
         with:
           push: true
+          build-args: |
+            VUE_APP_API_URL=${{ env.VUE_APP_API_URL }}
+            VUE_APP_API_KEY=${{ env.VUE_APP_API_KEY }}
           tags: |
             ${{ env.REGISTRY }}/${{ env.BASE_IMAGE_NAME }}:${{ steps.semantic.outputs.new_release_version }}
             ${{ env.REGISTRY }}/${{ env.BASE_IMAGE_NAME }}:latest
