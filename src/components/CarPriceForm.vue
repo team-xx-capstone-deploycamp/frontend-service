@@ -7,8 +7,14 @@
       <legend class="text-md font-medium">Info Dasar</legend>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
         <div>
-          <label class="block font-medium">Car Name <span class="text-blue-500 cursor-help" title="Merek mobil">&#9432;</span></label>
-          <input v-model="form.CarName" type="text" class="w-full border rounded px-3 py-2" placeholder="Mazda GLC" required />
+          <label class="block font-medium">
+            Car Name 
+            <span class="text-blue-500 cursor-help" title="Merek mobil">&#9432;</span>
+          </label>
+          <select v-model="form.CarName" class="w-full border rounded px-3 py-2" required>
+            <option disabled value="">Pilih salah satu</option>
+            <option v-for="name in carNames" :key="name" :value="name">{{ name }}</option>
+          </select>
         </div>
         <div>
           <label class="block font-medium">Fuel Type <span class="text-blue-500 cursor-help" title="Bensin atau diesel">&#9432;</span></label>
@@ -20,7 +26,7 @@
         </div>
       </div>
     </fieldset>
-
+    
     <!-- Spesifikasi Body dan Struktur -->
     <fieldset class="border border-gray-300 p-4 rounded mb-4">
       <legend class="text-md font-medium">Body & Struktur</legend>
@@ -125,7 +131,7 @@
         </div>
       </div>
     </fieldset>
-
+    
     <!-- Spesifikasi Bahan Bakar -->
     <fieldset class="border border-gray-300 p-4 rounded mb-4">
       <legend class="text-md font-medium">Spesifikasi Bahan Bakar</legend>
@@ -176,7 +182,7 @@
       <button @click="submitForm" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Prediksi Harga</button>
       <button @click="resetForm" class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded">Reset</button>
     </div>
-
+    
     <!-- Hasil Prediksi -->
     <div v-if="predictedPrice !== null" class="mt-6 p-4 border rounded bg-green-50 text-green-800">
       <strong>Prediksi Harga:</strong> ${{ predictedPrice }}
@@ -188,6 +194,139 @@
 export default {
   data() {
     return {
+      carNames: [
+      'alfa-romero giulia',
+      'alfa-romero stelvio',
+      'alfa-romero Quadrifoglio',
+      'audi 100 ls',
+      'audi 100ls',
+      'audi fox',
+      'audi 5000',
+      'audi 4000',
+      'audi 5000s (diesel)',
+      'bmw 320i',
+      'bmw x1',
+      'bmw x3',
+      'bmw z4',
+      'chevrolet monte carlo',
+      'chevrolet vega 2300',
+      'dodge rampage',
+      'dodge challenger se',
+      'dodge d200',
+      'dodge monaco (sw)',
+      'dodge colt hardtop',
+      'dodge colt (sw)',
+      'dodge coronet custom',
+      'dodge dart custom',
+      'honda civic cvcc',
+      'honda civic',
+      'honda accord cvcc',
+      'honda accord lx',
+      'honda civic 1500 gl',
+      'honda accord',
+      'honda civic 1300',
+      'honda prelude',
+      'honda civic (auto)',
+      'isuzu MU-X',
+      'isuzu D-Max ',
+      'isuzu D-Max V-Cross',
+      'maxda rx3',
+      'maxda glc deluxe',
+      'mazda rx2 coupe',
+      'mazda rx-4',
+      'mazda glc deluxe',
+      'mazda 626',
+      'mazda glc',
+      'mazda rx-7 gs',
+      'mazda glc 4',
+      'mazda glc custom l',
+      'mazda glc custom',
+      'buick electra 225 custom',
+      'buick century luxus (sw)',
+      'buick century',
+      'mercury cougar',
+      'mitsubishi mirage',
+      'mitsubishi lancer',
+      'mitsubishi outlander',
+      'mitsubishi g4',
+      'mitsubishi mirage g4',
+      'mitsubishi montero',
+      'mitsubishi pajero',
+      'Nissan versa',
+      'nissan rogue',
+      'nissan latio',
+      'nissan titan',
+      'nissan leaf',
+      'nissan juke',
+      'nissan note',
+      'nissan clipper',
+      'nissan nv200',
+      'nissan dayz',
+      'nissan fuga',
+      'nissan otti',
+      'nissan teana',
+      'nissan kicks',
+      'peugeot 504',
+      'peugeot 304',
+      'peugeot 504 (sw)',
+      'peugeot 604sl',
+      'peugeot 505s turbo diesel',
+      'plymouth fury iii',
+      'plymouth cricket',
+      'plymouth satellite custom (sw)',
+      'plymouth fury gran sedan',
+      'plymouth valiant',
+      'plymouth duster',
+      'porsche macan',
+      'renault 12tl',
+      'renault 5 gtl',
+      'saab 99e',
+      'saab 99le',
+      'saab 99gle',
+      'subaru',
+      'subaru dl',
+      'subaru brz',
+      'subaru baja',
+      'subaru r1',
+      'subaru r2',
+      'subaru trezia',
+      'subaru tribeca',
+      'toyota corona mark ii',
+      'toyota corona',
+      'toyota corolla 1200',
+      'toyota corona hardtop',
+      'toyota corolla 1600 (sw)',
+      'toyota carina',
+      'toyota mark ii',
+      'toyota corolla',
+      'toyota corolla liftback',
+      'toyota celica gt liftback',
+      'toyota corolla tercel',
+      'toyota corona liftback',
+      'toyota starlet',
+      'toyota tercel',
+      'toyota cressida',
+      'toyota celica gt',
+      'toyouta tercel',
+      'vokswagen rabbit',
+      'volkswagen 1131 deluxe sedan',
+      'volkswagen model 111',
+      'volkswagen type 3',
+      'volkswagen 411 (sw)',
+      'volkswagen super beetle',
+      'volkswagen dasher',
+      'vw dasher',
+      'vw rabbit',
+      'volkswagen rabbit',
+      'volkswagen rabbit custom',
+      'volvo 145e (sw)',
+      'volvo 144ea',
+      'volvo 244dl',
+      'volvo 245',
+      'volvo 264gl',
+      'volvo diesel',
+      'volvo 246'
+      ],
       form: {
         CarName: '',
         fueltype: '',
@@ -215,12 +354,12 @@ export default {
   methods: {
     async submitForm() {
       try {
-        const base_url = process.env.VUE_APP_API_URL || 'http://127.0.0.1:8000';
-        const response = await fetch(`${base_url}/v1/predict`, {
+        const response = await fetch('http://127.0.0.1:8000/v1/predict', {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json',
-            'Authorization': process.env.VUE_APP_API_KEY || 'Basic YWRtaW46Y2hhbmdlbWU='
+            'Authorization': 'Basic YWRtaW46Y2hhbmdlbWU='
+
           },
           body: JSON.stringify({record: this.form}),
         });
