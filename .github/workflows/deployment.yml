@@ -49,9 +49,13 @@ jobs:
       - name: Extract deployment tag
         id: extract-tag
         run: |
-          TAG="${{ env.REGISTRY }}/${{ env.BASE_IMAGE_NAME }}:${{ steps.semantic.outputs.new_release_version }}"
+          if [ "${{ steps.semantic.outcome }}" == "success" ] && [ -n "${{ steps.semantic.outputs.new_release_version }}" ]; then
+            TAG="${{ env.REGISTRY }}/${{ env.BASE_IMAGE_NAME }}:${{ steps.semantic.outputs.new_release_version }}"
+          else
+            TAG="${{ env.REGISTRY }}/${{ env.BASE_IMAGE_NAME }}:latest"
+          fi
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
-          echo "Deployment tag: ${TAG}"
+          echo "Using tag: ${TAG}"
 
       - name: Set up environment variables for build
         run: |
@@ -68,7 +72,7 @@ jobs:
             VUE_APP_API_URL=${{ env.VUE_APP_API_URL }}
             VUE_APP_API_KEY=${{ env.VUE_APP_API_KEY }}
           tags: |
-            ${{ env.REGISTRY }}/${{ env.BASE_IMAGE_NAME }}:${{ steps.semantic.outputs.new_release_version }}
+            ${{ steps.extract-tag.outputs.tag }}
             ${{ env.REGISTRY }}/${{ env.BASE_IMAGE_NAME }}:latest
 
   security-scan:
