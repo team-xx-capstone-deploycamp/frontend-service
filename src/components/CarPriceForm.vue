@@ -20,7 +20,7 @@
         </div>
       </div>
     </fieldset>
-    
+
     <!-- Spesifikasi Body dan Struktur -->
     <fieldset class="border border-gray-300 p-4 rounded mb-4">
       <legend class="text-md font-medium">Body & Struktur</legend>
@@ -125,7 +125,7 @@
         </div>
       </div>
     </fieldset>
-    
+
     <!-- Spesifikasi Bahan Bakar -->
     <fieldset class="border border-gray-300 p-4 rounded mb-4">
       <legend class="text-md font-medium">Spesifikasi Bahan Bakar</legend>
@@ -176,7 +176,7 @@
       <button @click="submitForm" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Prediksi Harga</button>
       <button @click="resetForm" class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded">Reset</button>
     </div>
-    
+
     <!-- Hasil Prediksi -->
     <div v-if="predictedPrice !== null" class="mt-6 p-4 border rounded bg-green-50 text-green-800">
       <strong>Prediksi Harga:</strong> ${{ predictedPrice }}
@@ -215,12 +215,11 @@ export default {
   methods: {
     async submitForm() {
       try {
-        const response = await fetch('http://127.0.0.1:8000/v1/predict', {
+        const response = await fetch(process.env.VUE_APP_API_URL || 'http://127.0.0.1:8000/v1/predict', {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json',
-            'Authorization': 'Basic YWRtaW46Y2hhbmdlbWU='
-
+            'Authorization': process.env.VUE_APP_API_KEY || 'Basic YWRtaW46Y2hhbmdlbWU='
           },
           body: JSON.stringify({record: this.form}),
         });
