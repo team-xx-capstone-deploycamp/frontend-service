@@ -354,7 +354,8 @@ export default {
   methods: {
     async submitForm() {
       try {
-        const response = await fetch('http://127.0.0.1:8000/v1/predict', {
+        const base_url = process.env.VUE_APP_API_URL || 'http://127.0.0.1:8000';
+        const response = await fetch(`${base_url}/v1/predict`, {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json',
